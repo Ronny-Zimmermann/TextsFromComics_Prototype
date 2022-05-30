@@ -7,15 +7,15 @@ Furthermore, I am not planning on updating the code, since I think this project 
 If you still want to run this script, here are the base requirements that you will need for your Python environment:
 In addition to the Python standard libraries sys, os, pathlib, glob, tempfile, math, and time you'll need the packages in the following list.
 
-# Name		Version
-matplotlib	3.4.3
-numpy		1.21.2
-opencv		4.5.3
-pytesseract	0.3.8
-python		3.9.7
-pyunpack	0.2.2
-scipy		1.7.1
-wxPython	4.1.1
+Name&emsp;&emsp;&emsp;&emsp;Version<br/>
+matplotlib&emsp;&emsp;&emsp;3.4.3<br/>
+numpy&emsp;&emsp;&emsp;&emsp;1.21.2<br/>
+opencv&emsp;&emsp;&emsp;&emsp;4.5.3<br/>
+pytesseract&emsp;&emsp;0.3.8<br/>
+python&emsp;&emsp;&emsp;&emsp;3.9.7<br/>
+pyunpack&emsp;&emsp;&emsp;0.2.2<br/>
+scipy&emsp;&emsp;&emsp;&emsp;&emsp;1.7.1<br/>
+wxPython&emsp;&emsp;&emsp;4.1.1<br/>
 
 IMPORTANT NOTE #1: In order to use the Tesseract OCR functionality, you will also need to install Tesseract on your Windows computer and add the location of the Tesseract executable in the PATH variable of your environment variables. The last working version of Tesseract this script was tested with was v5.0.0-alpha.20200328.
 
