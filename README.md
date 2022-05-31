@@ -16,6 +16,6 @@ pyunpack&emsp;&emsp;&emsp;0.2.2<br/>
 scipy&emsp;&emsp;&emsp;&emsp;&emsp;1.7.1<br/>
 wxPython&emsp;&emsp;&emsp;4.1.1<br/>
 # IMPORTANT NOTE No 1:<br/>
-In order to use the Tesseract OCR functionality, you will also need to install Tesseract on your Windows computer and add the location of the Tesseract executable in the PATH variable of your environment variables. The last working version of Tesseract this prototype was tested with was v5.0.0-alpha.20200328.
+In order to use the Tesseract OCR functionality, you will also need to install Tesseract on your Windows system and add the location of the Tesseract executable in the PATH variable of your environment variables. The last working version of Tesseract this prototype was tested with was v5.0.0-alpha.20200328.
 # IMPORTANT NOTE No 2:<br/>
-Again, the prototype will only run reliably on Microsoft Windows. Last tested version was Windows 10 Pro Version 21H2.
+Again, the prototype especially the GUI will only run reliably on Microsoft Windows. Last tested version was Windows 10 Pro Version 21H2.
