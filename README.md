@@ -3,7 +3,7 @@ A GUI-based prototype for semi-automatically extracting written texts from comic
 Works only on **Microsoft Windows** with the necessary Python environment requirements listed below.<br/><br/>
 **Please consider the following when using the prototype for your own projects:<br/><br/>**
 I programmed this for my M.A. thesis in the Anglophone Modernities program at the University of Potsdam. At the time, I was much more a humanities student than a programmer. Meaning I was a newbie to programming as well as to Python. I think than will become clear when you see the source code. ;-)<br/><br/>
-Furthermore, I am not planning on updating the code, since I think this project deserves a completely fresh start.<br/><br/>
+Furthermore, I am not planning on updating the code. A completely fresh start is more realistic at this point.<br/><br/>
 If you still want to run this script, here are the base requirements that you will need for your Python environment:<br/>
 In addition to the **Python 3.9.7** and its standard libraries **sys, os, pathlib, glob, tempfile, math, and time** you'll need the packages in the following list.<br/><br/>
 **Name&emsp;&emsp;&emsp;&emsp;Version<br/>**
