@@ -1,5 +1,5 @@
 # TextsFromComics_Prototype
-A GUI-based prototype for semi-automatically extracting written texts from comic page images written in Python.<br/>
+A GUI-based prototype for semi-automatic extraction of written texts from comic page images written in Python.<br/>
 Works only on **Microsoft Windows** with the necessary Python environment requirements listed below.<br/><br/>
 **Please consider the following when using the prototype for your own projects:<br/><br/>**
 I programmed this for my M.A. thesis in the Anglophone Modernities program at the University of Potsdam. At the time, I was much more a humanities student than a programmer. Meaning I was a newbie to programming as well as to Python. I think than will become clear when you see the source code. ;-)<br/><br/>
