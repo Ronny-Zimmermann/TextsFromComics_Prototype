@@ -406,17 +406,12 @@ class DataHandler:
 
         # constructing the output path
         tcpDbPath = pathlib.Path.joinpath(pathlib.Path(self.dbPath), '_TCPdb')
-#        savDir = pathlib.Path.joinpath(tcpDbPath, self.savDirName)
+
         outTxtFileName = self.savDirName + ".txt"
-#        pagImgPath = pathlib.Path.joinpath(tcpDbPath, self.savDirName, "_ComicPages")
-#        bubImgPath = pathlib.Path.joinpath(tcpDbPath, self.savDirName, "_TextImages")
 
         # the output directories are created if they do not exist
         if not os.path.exists(tcpDbPath):
             os.makedirs(tcpDbPath)
-
-#        if not os.path.exists(savDir):
-#            os.makedirs(savDir)
 
         currWorkDir = os.getcwd()
         os.chdir(tcpDbPath)
@@ -425,11 +420,13 @@ class DataHandler:
 
         comText = ""
 
+        # collecting the texts from the data list into a single variable
         for i in range(len(self.mainList)):
             if len(self.mainList[i][1]) > 0:
                 for j in range(len(self.mainList[i][1])):
                     comText = comText + self.mainList[i][1][j][2] + "\n"
 
+        # writing the collected texts into the specified file
         outFile.write(comText)
 
         outFile.close()
@@ -450,8 +447,6 @@ class LoadingMonolog(wx.Dialog):
     def __init__(self, parent, msg):
         # Constructor
         wx.Panel.__init__(self, parent, wx.ID_ANY, style=wx.STAY_ON_TOP)
-
-#        self.loadDone = 0
 
         self.mainSizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -630,23 +625,7 @@ class SpeeBubTextEditor(wx.Panel):
 
             loadMlg = LoadingMonolog(None, "Trying to detect text in image(s). Please wait...")
 
-            savFilePath = MainFrame.comDat.dbPath + MainFrame.comDat.savDirName + "_BubbleDetectionTimes.csv"
-            savFilePath = pathlib.PurePath(savFilePath)
-            startTime = time.process_time()
-
-            startTime = time.process_time()
-
             MainFrame.comDat.speeBubHandler([], 9, 0)
-
-            duration = str(time.process_time() - startTime).replace('.',',')
-            fileName = MainFrame.comDat.comPageList[MainFrame.comDat.comPageIdx][1]
-
-            txtLine = fileName + ";" + str(MainFrame.comDat.comPageIdx+1) + ";" + duration + ";OCR\n"
-
-            with open(savFilePath, "a", encoding="utf-8") as txtFile:
-                txtFile.write(txtLine)
-
-            MainFrame.mainPanel.lSubPan.btnSavDat.SetFocus()
 
             loadMlg.finished()
 
@@ -784,10 +763,6 @@ class ComicPageViewer(wx.Panel):
             loadMlg = LoadingMonolog(None, "Trying to detect text on image. Please wait...")
             tmpSpeeBubList = []
 
-            savFilePath = MainFrame.comDat.dbPath + MainFrame.comDat.savDirName + "_BubbleDetectionTimes.csv"
-            savFilePath = pathlib.PurePath(savFilePath)
-            startTime = time.process_time()
-
             if MainFrame.comDat.comPageList:
 
                 tmpSpeeBubList = findTextOnComicPage(MainFrame.comDat.comPageList[MainFrame.comDat.comPageIdx][0])
@@ -796,14 +771,6 @@ class ComicPageViewer(wx.Panel):
 
                 ImageCheck(tmpSpeeBubList, 1, 0, title='Text Cutout Check', parent=wx.GetTopLevelParent(self))
 
-            duration = str(time.process_time() - startTime).replace('.',',')
-            fileName = MainFrame.comDat.comPageList[MainFrame.comDat.comPageIdx][1]
-
-            txtLine = fileName + ";" + str(MainFrame.comDat.comPageIdx+1) + ";" + duration + ";textDetect\n"
-
-            with open(savFilePath, "a", encoding="utf-8") as txtFile:
-                txtFile.write(txtLine)
-            
             loadMlg.finished()
 
     #----------------------------------------------------------------------
@@ -1685,15 +1652,6 @@ def findTextOnComicPage(wxImg):
             h = int(rect[3])
             speeBubImgList.append([convertCv2Img2WxImg(img[y:y+h, x:x+w]), [x, y, w, h]])
 
-    # display speech bubbles
-    # for d in range(len(speeBubCv2ImgList)):
-    #     winText = "Speech Bubble"+ str(d)
-    #     cv2.imshow(winText, speeBubCv2ImgList[d])
-
-    # print('press a key to continue')
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
-
     return speeBubImgList
 
 #====================================================================
@@ -1717,22 +1675,14 @@ def findContours(img, process):
     # as background for text on the comic page
     img = cv2.threshold(img,140,255,cv2.THRESH_BINARY)[1]
 
-    # exImg2 = img.copy()
-
     # inverting the image colors back again
     img = cv2.bitwise_not(img)
 
     # converting the image colors to grayscale
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    # exImg2 = cv2.cvtColor(exImg2, cv2.COLOR_BGR2GRAY)
-
     # creating a binary copy of the gray scale image
     binImg = cv2.threshold(img, 149, 255, cv2.THRESH_BINARY)[1]
-
-    # exImg1 = binImg
-    
-    # exImg2 = cv2.threshold(exImg2, 149, 255, cv2.THRESH_BINARY)[1]
 
     if process == 1:
         # trying to "thin" the black lines on the page in order to
@@ -1743,16 +1693,10 @@ def findContours(img, process):
         kernel = np.ones((1,1), np.uint8)
         binImg = cv2.dilate(binImg, kernel, iterations = 1)
 
-        # exImg1 = cv2.dilate(exImg1, kernel, iterations = 1)
-        # exImg2 = cv2.dilate(exImg2, kernel, iterations = 1)
-
     elif process == 2:
         # mainly trying to "fatten" the text by filling in possible gaps 
         kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (3, 3))
         binImg = cv2.erode(binImg, kernel, iterations = 1)
-        
-        # exImg1 = cv2.erode(exImg1, kernel, iterations = 1)
-        # exImg2 = cv2.erode(exImg2, kernel, iterations = 1)
 
     elif process == 3:
         return binImg
@@ -1768,28 +1712,6 @@ def findContours(img, process):
     elif process <=2 and openCvVer == "3":
         contourList = cv2.findContours(binImg, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[1]
 
-    # draw the contours onto the image
-    # colCont, hierachy = cv2.findContours(binImg, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-    # for contour in colCont:
-    #     col = list(np.random.choice(range(256), size=3))
-    #     cv2.drawContours(exImg1, contour, -1, (int(col[0]),int(col[1]),int(col[2])), 3)
-
-    # resize and display specified image (uncomment for OCR)
-    # scale_percent = 100 # percent of original size
-    # width = int(img.shape[1] * scale_percent / 100)
-    # height = int(img.shape[0] * scale_percent / 100)
-    # dim = (width, height)
-      
-    # # resize image
-    # exImg1 = cv2.resize(exImg1, dim, interpolation = cv2.INTER_AREA)
-    # exImg2 = cv2.resize(exImg2, dim, interpolation = cv2.INTER_AREA)
-    
-    # cv2.imshow("Img1", exImg1)
-    # cv2.imshow("Img2", exImg2)
-    
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
-
     return contourList
 
 #====================================================================
@@ -1799,9 +1721,6 @@ def findLetterContourRects(contourList, img, imgH, imgW):
 
     letterRectList = []
     exPtsList = []
-
-    # used for test purposes
-    # exImg1 = img.copy()
 
     # specify how big the contours are allowed to be in relation to the
     # size of the image; xMin/xMax 0.004/0.05 & yMin/yMax 0.0025/0.015
@@ -1834,27 +1753,6 @@ def findLetterContourRects(contourList, img, imgH, imgW):
             # the array that will be used to find proxies;
             # the order is xyLeft, xyRight, xyTop, xyBottom
             exPtsList.append([(x,y1),(x+w,y1),(x1,y),(x1,y+h)])
-        
-    #         # draw the contours onto the image
-    #         cv2.rectangle(exImg1, (x, y), (x+w, y+h), (255, 0, 0), 2)
-    #         cv2.circle(exImg1, (x, y1), 3, (0, 0, 255), thickness=-1)
-    #         cv2.circle(exImg1, (x+w, y1), 3, (0, 0, 255), thickness=-1)
-
-    # # resize and display specified image (uncomment for OCR)
-    # scale_percent = 100 # percent of original size
-    # width = int(img.shape[1] * scale_percent / 100)
-    # height = int(img.shape[0] * scale_percent / 100)
-    # dim = (width, height)
-      
-    # # resize image
-    # exImg1 = cv2.resize(exImg1, dim, interpolation = cv2.INTER_AREA)
-    # # exImg2 = cv2.resize(exImg2, dim, interpolation = cv2.INTER_AREA)
-    
-    # cv2.imshow("Img1", exImg1)
-    # # cv2.imshow("Img2", exImg2)
-    
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
 
     #######################################################################
     # in the next step we will try to find clusters of text rectangles by #
@@ -1967,15 +1865,20 @@ def findLetterContourRects(contourList, img, imgH, imgW):
 def eliminateEnclosedRectangles(rectList):
 
     eliRectList = []
-    
+
+    # every rectangle in the list is checked against...
     for i in range(len(rectList)):
     
         [x1ul,y1ul,w1,h1] = rectList[i]
 
+        # ...every rectangle in the list
         for j in range(len(rectList)):
 
             [x2ul,y2ul,w2,h2] = rectList[j]
 
+            # if "1" is not the same rectangle as "2" and every corner
+            # from rectangle "1" is inside rectangle "2", write "1"
+            # in the elimination list and stop the inner for-loop
             if rectList[i] != rectList[j] and\
                x2ul <= x1ul <= x2ul+w2 and\
                y2ul <= y1ul <= y2ul+h2 and\
@@ -1985,6 +1888,7 @@ def eliminateEnclosedRectangles(rectList):
                    eliRectList.append(rectList[i])
                    break
 
+    # delete all rectangles from the list that are in the elimination list
     rectList = [x for x in rectList if x not in eliRectList]
 
     return rectList
@@ -2056,17 +1960,6 @@ def findTxtClusters(letterRectList, img, imgH, imgW):
                 # the program
                 if y+h <= imgH and x+w <= imgW:
                     cluArr[y+j][x+k] = 1
-
-    # cluList = cluArr.tolist()
-    # text = ""
-    # for x in range(len(cluList)):
-    #     line = ""
-    #     for y in range(len(cluList[x])):
-    #         line = line + str(cluList[x][y])
-    #     text = text + "\n" + line
-    
-    # with open("output.txt", "w") as txt:
-    #     txt.write(text)
 
     # now the gabs within smaller clusters are filled by defining how much
     # distance (pixels) a cloud of "1"s/ones is allowed to have in the x and y
@@ -2168,7 +2061,7 @@ def findTxtClusters(letterRectList, img, imgH, imgW):
                     zeroCount = 0
 
                     # for every element/pixel within the vertical checking range
-                    # do the same as in the for-loop before
+                    # do the same as in the for-loop that checks horizontally
                     for k in range(checkPtsY):
 
                         if k+1 < checkPtsY:
@@ -2186,17 +2079,6 @@ def findTxtClusters(letterRectList, img, imgH, imgW):
 
                             if cluArr[i+k+1][j] == 1 and zeroCount == 0:
                                 break
-
-    # cluList = cluArr.tolist()
-    # text = ""
-    # for x in range(len(cluList)):
-    #     line = ""
-    #     for y in range(len(cluList[x])):
-    #         line = line + str(cluList[x][y])
-    #     text = text + "\n" + line
-    
-    # with open("output.txt", "w") as txt:
-    #     txt.write(text)
 
     # the cluster list is now used to actually identify the coordinates of the
     # rectangle clusters; this is done by utilizing the measurement-module of the
@@ -2230,7 +2112,7 @@ def findTxtClusters(letterRectList, img, imgH, imgW):
 
     # this preliminary list of possible "text-objects" needs further refinement;
     # first, rectangles with an area smaller than the average area size are omitted
-    #
+
     # calculate the average area of the rectangles in the list
     aveArea = int(mean(rectArea)*0.34)
 
@@ -2279,10 +2161,6 @@ def findTxtClusters(letterRectList, img, imgH, imgW):
         rect = img[y:y+h, x:x+w]
         if rect.mean() >= aveRectIntensity*0.9:
             txtClusterList.append([x,y,w,h])
-            
-    # resize and display specified image (uncomment for OCR)
-#    imgResize = resizeCv2ImgWithAspectRatio(img, height=900)
-#    cv2.imshow("binImg", imgResize)
 
     return txtClusterList
 
@@ -2290,32 +2168,7 @@ def findTxtClusters(letterRectList, img, imgH, imgW):
 # this function searches for rectangles with text in them
 def findTxtBubsBoxs(letRectList, txtClusList, bubRectList, img):
 
-    # draw the rectangles in the list on the image
-#    color = (0,0,255)
-#    for d in range(len(letRectList)):
-#        cv2.rectangle(img, (int(letRectList[d][0]), int(letRectList[d][1])),\
-#                            (int(letRectList[d][0]+letRectList[d][2]),\
-#                            int(letRectList[d][1]+letRectList[d][3])), color, 1)    
-
-    # draw the rectangles in the list on the image    
-
-#    color = (147,20,255)
-#    for d in range(len(txtClusList)):
-#        cv2.rectangle(img, (int(txtClusList[d][0]), int(txtClusList[d][1])),\
-#                            (int(txtClusList[d][0] + txtClusList[d][2]),\
-#                            int(txtClusList[d][1] + txtClusList[d][3])), color, 4)
-
-    # draw the rectangles in the list on the image
-#    color = (255,0,0)
-#    for d in range(len(bubRectList)):
-#        cv2.rectangle(img, (int(bubRectList[d][0]), int(bubRectList[d][1])),\
-#                            (int(bubRectList[d][0]+bubRectList[d][2]),\
-#                            int(bubRectList[d][1]+bubRectList[d][3])), color, 3)
-
     realTextRectList = []
-
-#    os.remove("temp.txt")
-#    f = open("temp.txt","w+")
 
     # for each rectangle/coordinates-item in the text-cluster list
     for i in range(len(txtClusList)):
@@ -2333,14 +2186,6 @@ def findTxtBubsBoxs(letRectList, txtClusList, bubRectList, img):
         # calculate the size of the rectangle area
         areaRect1 = w1*h1
 
-#        print('')
-#        print(i, areaRect1)
-#        print('')
-#        f.write("\n"+str(i)+" "+str(areaRect1)+"\n")
-#        cv2.putText(img, 'TXT ' + str(int(i)), (int(midX1),int(midY1)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (147,20,255), 2)
-
-#        distCornersRect1 = int(math.hypot(x1ul+w1 - x1ul, y1ul+h1 - y1ul))
-
         # for each bounding rectangle in the speech bubble / caption box list...
         for j in range(len(bubRectList)):
         	
@@ -2357,10 +2202,6 @@ def findTxtBubsBoxs(letRectList, txtClusList, bubRectList, img):
 
             # calculate the size of the rectangle area
             areaRect2 = w2*h2
-
-#            print(j, areaRect2)
-#            f.write(str(j)+" "+str(areaRect2)+"\n")
-#            cv2.putText(img, 'BUB ' + str(int(j)), (int(midX2),int(midY2)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,0,0), 2)
 
             # these if-statements check whether any of the text-clusters' bounding
             # rectangles are within the boundaries of the current speech bubble or
@@ -2404,26 +2245,8 @@ def findTxtBubsBoxs(letRectList, txtClusList, bubRectList, img):
 
             realTextRectList.append(resizedRect)
 
-#    f.close()
-
     # check the array for doublets
     realTextRectList = [q for o, q in enumerate(realTextRectList) if q not in realTextRectList[:o]]
-
-
-#    # draw the rectangles in the list on the image
-#    color = (0,255,0)
-#    for d in range(len(realTextRectList)):
-#        cv2.rectangle(img, (int(realTextRectList[d][0]), int(realTextRectList[d][1])),\
-#                            (int(realTextRectList[d][0]+realTextRectList[d][2]),\
-#                            int(realTextRectList[d][1]+realTextRectList[d][3])), color, 2)
-
-#    # resize and display specified image (uncomment for OCR)
-#    imgResize = img #resizeCv2ImgWithAspectRatio(img, height=900)
-#    cv2.imshow("Img", imgResize)
-
-#    print('press a key to continue')
-#    cv2.waitKey(0)
-#    cv2.destroyAllWindows()
 
     return realTextRectList
 
@@ -2500,43 +2323,33 @@ def ocrSpeeBub(speeBubList):
 
     speeBubTextList = []
 
-    i = 0
-    
     for speeBub in speeBubList:
 
         speeBubcv2 = convertWXimg2CV2img(speeBub.ConvertToImage())
 
-        # exImg1 = speeBubcv2.copy()
-
-        # # enlarge
+        # enlarge
 #        speeBubcv2 = cv2.resize(speeBubcv2, (0,0), fx = 3, fy = 3)
-        # # denoise
+
+        # denoise
         speeBubcv2 = denoiseCv2Image(speeBubcv2, 1)
 
-        # exImg2 = speeBubcv2.copy()
-
-        # # turn gray
-        # croppedImageGray = cv2.cvtColor(croppedImage, cv2.COLOR_BGR2GRAY)
-        # # Gaussian filter
-        # croppedImageGrayBlur = cv2.GaussianBlur(croppedImageGray,(5,5),0)
-
+        # inverting the colors of the image
         speeBubcv2 = cv2.bitwise_not(speeBubcv2)
 
+        # adjust brightness
         speeBubcv2 = cv2.convertScaleAbs(speeBubcv2, alpha=1.0, beta=50)
 
+        # reduce color space
         speeBubcv2 = cv2.threshold(speeBubcv2,140,255,cv2.THRESH_BINARY)[1]
 
+        # inverting the colors back
         speeBubcv2 = cv2.bitwise_not(speeBubcv2)
 
+        # convert colors to gray scale
         speeBubcv2 = cv2.cvtColor(speeBubcv2, cv2.COLOR_BGR2GRAY)
 
+        # binary convertion of colors (pure black and white image)
         speeBubcv2 = cv2.threshold(speeBubcv2,149,255,cv2.THRESH_BINARY)[1]
-
-        #croppedImage = cv2.morphologyEx(croppedImage, cv2.MORPH_CLOSE, kernel)
-
-        # exImg3 = speeBubcv2.copy()
-
-        i+=1
 
         # pass cropped image to the ocr engine
         speeBubText = tesseract(speeBubcv2)
@@ -2546,24 +2359,6 @@ def ocrSpeeBub(speeBubList):
 
         # lstrip removes all leading white spaces from the line of text
         speeBubTextList.append(speeBubText.lstrip(' '))
-
-        # # resize and display specified image (uncomment for OCR)
-        # scale_percent = 100 # percent of original size
-        # width = int(speeBubcv2.shape[1] * scale_percent / 100)
-        # height = int(speeBubcv2.shape[0] * scale_percent / 100)
-        # dim = (width, height)
-          
-        # # resize image
-        # exImg1 = cv2.resize(exImg1, dim, interpolation = cv2.INTER_AREA)
-        # exImg2 = cv2.resize(exImg2, dim, interpolation = cv2.INTER_AREA)
-        # exImg3 = cv2.resize(exImg3, dim, interpolation = cv2.INTER_AREA)
-        
-        # cv2.imshow("Img1", exImg1)
-        # cv2.imshow("Img2", exImg2)
-        # cv2.imshow("Img3", exImg3)
-        
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
 
     return speeBubTextList
 
@@ -2585,7 +2380,6 @@ def unpackImgArch2ImgList(packedFile):
     
     # create a temporary directory
     with tempfile.TemporaryDirectory() as tmpDir:
-#       print('Temporary directory %s' % tmpDir, 'was CREATED.')
 
         # unpack all files from the archive into the temporary directory
         Archive(packedFile).extractall(tmpDir)
@@ -2599,10 +2393,6 @@ def unpackImgArch2ImgList(packedFile):
 
         # feeding the image list with the images
         imgsList = imgPaths2ImgList(imgPaths)
-
-#    if not os.path.isdir(tmpDir):
-
-#        print('Temporary directory %s' % tmpDir, 'was DELETED.')
 
     return imgsList, imgPaths
 
@@ -2618,8 +2408,6 @@ def imgPaths2ImgList(imgPaths):
 
     # sort our list alphabetically
     imgPaths = sortStringLists(imgPaths, ".,;-_ ()[]{}")
-
-#    pp(imgPaths)
 
     # write the images into the image list
     for i in range(len(imgPaths)):
