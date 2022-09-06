@@ -10,6 +10,7 @@ In addition to the **Python 3.9.7** and its standard libraries **sys, os, pathli
 matplotlib&emsp;&emsp;&emsp;3.4.3<br/>
 numpy&emsp;&emsp;&emsp;&emsp;1.21.2<br/>
 opencv&emsp;&emsp;&emsp;&emsp;4.5.3<br/>
+patool&emsp;&emsp;&emsp;&emsp;1.1.2<br/>
 pytesseract&emsp;&emsp;0.3.8<br/>
 pyunpack&emsp;&emsp;&emsp;0.2.2<br/>
 scipy&emsp;&emsp;&emsp;&emsp;&emsp;1.7.1<br/>
